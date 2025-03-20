@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "845013557091",
+    "project_id": "printify-d0cd0",
+    "storage_bucket": "printify-d0cd0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:845013557091:android:7a7a503a434073bf7abd56",
+        "android_client_info": {
+          "package_name": "com.thewhitehats.printify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGqbVyN5cUI_cvKwJw4Doq72pHOWUzexo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
