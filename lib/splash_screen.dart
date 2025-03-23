@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:printify/screens/student_dashboard/student_dashboard.dart';
 import 'package:provider/provider.dart';
 import 'package:printify/screens/auth/login_screen.dart';
 import '../providers/auth_provider.dart';
@@ -37,48 +38,10 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _navigateToDashboard(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-/*
-    if (authProvider.isVerified) {
-      switch (authProvider.userRole) {
-        case 'Founders':
-        case 'Leads':
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => AdminDashboard()),
-          );
-          break;
-        case 'superAdmin':
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => SuperAdminDashboard()),
-          );
-          break;
-        default:
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (_) => MemberDashboard(role: authProvider.userRole),
-            ),
-          );
-      }
-    }
-    else { */
-    // Show a dialog to inform the user that admin verification is in process
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Irungaa Bhaii!'),
-          content: Text('Super Admin verification is in process. Kindly Wait!'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => StudentDashboard()),
+      );
   }
 
   @override
@@ -95,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             SizedBox(height: 24),
             Text(
-              'SentinelsHQ',
+              'Printify',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,

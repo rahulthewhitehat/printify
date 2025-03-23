@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../widgets/custom_button.dart';
 import '../models/user_model.dart';
@@ -24,19 +21,12 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
-  late TextEditingController _whatsappController;
-  late TextEditingController _instagramController;
-  late TextEditingController _linkedinController;
-  late TextEditingController _githubController;
-  late TextEditingController _profilePictureController;
+  late TextEditingController _rollNoController;
 
   // Dropdown values
   String? _selectedDepartment;
   String? _selectedSection;
   int? _selectedYear;
-
-  // Date of Birth
-  DateTime? _selectedDateOfBirth;
 
   @override
   void initState() {
@@ -48,6 +38,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
     _nameController = TextEditingController(text: _currentUser.fullName);
     _emailController = TextEditingController(text: _currentUser.email);
     _phoneController = TextEditingController(text: _currentUser.phoneNumber);
+    _rollNoController = TextEditingController(text: _currentUser.rollNumber);
 
     _selectedDepartment = _currentUser.department;
     _selectedSection = _currentUser.section;
@@ -59,11 +50,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
-    _whatsappController.dispose();
-    _instagramController.dispose();
-    _linkedinController.dispose();
-    _githubController.dispose();
-    _profilePictureController.dispose();
+    _rollNoController.dispose();
     super.dispose();
   }
 
@@ -78,25 +65,11 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
     final updatedUserData = {
       'fullName': _nameController.text.trim(),
       'phoneNumber': _phoneController.text.trim(),
-      'whatsappNumber': _whatsappController.text.trim(),
       'department': _selectedDepartment,
       'section': _selectedSection,
       'year': _selectedYear,
-      'profilePicture': _profilePictureController.text.trim(),
-      'socialLinks': {
-        if (_instagramController.text
-            .trim()
-            .isNotEmpty)
-          'instagram': _instagramController.text.trim(),
-        if (_linkedinController.text
-            .trim()
-            .isNotEmpty)
-          'linkedin': _linkedinController.text.trim(),
-        if (_githubController.text
-            .trim()
-            .isNotEmpty)
-          'github': _githubController.text.trim(),
-      },
+      'rollNumber': _rollNoController.text.trim(),
+      'isVerified': false,
     };
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -115,75 +88,12 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
     }
   }
 
-  // Date of Birth picker
-  Future<void> _selectDateOfBirth(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDateOfBirth ?? DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != _selectedDateOfBirth) {
-      setState(() {
-        _selectedDateOfBirth = picked;
-      });
-    }
-  }
-
-  // New method to handle launching URLs or apps
-  Future<void> _launchAction(String url,
-      {LaunchMode mode = LaunchMode.platformDefault}) async {
-    try {
-      final Uri uri = Uri.parse(url);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: mode);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not launch $url')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error launching $url: $e')),
-      );
-    }
-  }
-
-  // Method to initiate a phone call
-  Future<void> _callUser(String phoneNumber) async {
-    final cleanPhone = phoneNumber.replaceAll(RegExp(r'\D'), '');
-    final Uri callUri = Uri(scheme: 'tel', path: cleanPhone);
-
-    try {
-      final status = await Permission.phone.request();
-      if (status.isGranted) {
-        await _launchAction(
-            callUri.toString(), mode: LaunchMode.externalApplication);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Phone call permission denied')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error making phone call: $e')),
-      );
-    }
-  }
-
-  // Method to open WhatsApp
-  void _whatsappUser(String phoneNumber) {
-    final Uri whatsappUri = Uri.parse("https://wa.me/+91$phoneNumber");
-    _launchAction(whatsappUri.toString(), mode: LaunchMode.externalApplication);
-  }
-
-  // Modify the phone number field to include call and WhatsApp icons
+  // Modify the phone number field to include both call and WhatsApp icons
   Widget _buildContactField({
     required TextEditingController controller,
     required String label,
     required IconData icon,
-    String? actionType, // 'call', 'whatsapp', or null
-    bool showActionIcon = false,
+    bool showActionIcons = false,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -203,62 +113,16 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
               keyboardType: TextInputType.phone,
             ),
           ),
-          if (!_isEditing && showActionIcon && controller.text.isNotEmpty)
+          if (!_isEditing && showActionIcons && controller.text.isNotEmpty)
             Row(
               children: [
-                if (actionType == 'call')
-                  IconButton(
-                    icon: Icon(Icons.call, color: Colors.green),
-                    onPressed: () => _callUser(controller.text),
-                  ),
-                if (actionType == 'whatsapp')
-                  IconButton(
-                    icon: FaIcon(
-                        FontAwesomeIcons.whatsapp, color: Colors.green),
-                    onPressed: () => _whatsappUser(controller.text),
-                  ),
+                // Call icon
               ],
             ),
         ],
       ),
     );
   }
-
-  // Modify social media fields to include link opening
-  Widget _buildSocialMediaField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    required String? Function(String?) urlValidator,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextFormField(
-              controller: controller,
-              decoration: InputDecoration(
-                labelText: label,
-                prefixIcon: Icon(icon, color: Colors.grey),
-                enabled: _isEditing,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              validator: urlValidator,
-            ),
-          ),
-          if (!_isEditing && controller.text.isNotEmpty)
-            IconButton(
-              icon: Icon(Icons.open_in_browser, color: Colors.blue),
-              onPressed: () => _launchAction(controller.text),
-            ),
-        ],
-      ),
-    );
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -290,32 +154,32 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                     .textTheme
                     .titleLarge,
               ),
+
+              SizedBox(height: 30),
               Text(
-                _currentUser.role,
+                'Personal Details',
                 style: Theme
                     .of(context)
                     .textTheme
                     .titleMedium,
               ),
-              SizedBox(height: 24),
+              SizedBox(height: 10),
 
-              // Phone Number with Call Icon
-              _buildContactField(
-                controller: _phoneController,
-                label: 'Phone Number',
-                icon: Icons.phone,
-                actionType: 'call',
-                showActionIcon: true,
+              // Editable Fields
+              _buildEditableField(
+                controller: _nameController,
+                label: 'Full Name',
+                icon: Icons.person,
+                isEditable: _isEditing,
               ),
 
-              // WhatsApp Number with WhatsApp Icon
-              _buildContactField(
-                controller: _whatsappController,
-                label: 'WhatsApp Number',
-                icon: FontAwesomeIcons.whatsapp,
-                actionType: 'whatsapp',
-                showActionIcon: true,
+              _buildEditableField(
+                controller: _rollNoController,
+                label: 'Roll Number',
+                icon: Icons.numbers_outlined,
+                isEditable: _isEditing,
               ),
+
 
               // Email Field with Mail Icon
               Padding(
@@ -335,83 +199,18 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                         ),
                       ),
                     ),
-                    if (!_isEditing && _emailController.text.isNotEmpty)
-                      IconButton(
-                        icon: Icon(Icons.mail_outline, color: Colors.blue),
-                        onPressed: () =>
-                            _launchAction('mailto:${_emailController.text}'),
-                      ),
                   ],
                 ),
               ),
 
-              // Social Media Fields with Link Icons
-              _buildSocialMediaField(
-                controller: _instagramController,
-                label: 'Instagram Profile URL',
-                icon: FontAwesomeIcons.instagram,
-                urlValidator: (value) {
-                  if (value != null && value.isNotEmpty &&
-                      !value.startsWith('http://') &&
-                      !value.startsWith('https://')) {
-                    return 'Please enter a valid URL';
-                  }
-                  return null;
-                },
-              ),
-              _buildSocialMediaField(
-                controller: _linkedinController,
-                label: 'LinkedIn Profile URL',
-                icon: FontAwesomeIcons.linkedin,
-                urlValidator: (value) {
-                  if (value != null && value.isNotEmpty &&
-                      !value.startsWith('http://') &&
-                      !value.startsWith('https://')) {
-                    return 'Please enter a valid URL';
-                  }
-                  return null;
-                },
-              ),
-              _buildSocialMediaField(
-                controller: _githubController,
-                label: 'GitHub Profile URL',
-                icon: FontAwesomeIcons.github,
-                urlValidator: (value) {
-                  if (value != null && value.isNotEmpty &&
-                      !value.startsWith('http://') &&
-                      !value.startsWith('https://')) {
-                    return 'Please enter a valid URL';
-                  }
-                  return null;
-                },
-              ),
-
-              // Editable Fields
-              _buildEditableField(
-                controller: _nameController,
-                label: 'Full Name',
-                icon: Icons.person,
-                isEditable: _isEditing,
-              ),
-
-              _buildDateOfBirthField(context),
-              /*
-              _buildEditableField(
+              _buildContactField(
                 controller: _phoneController,
                 label: 'Phone Number',
                 icon: Icons.phone,
-                isEditable: _isEditing,
-                keyboardType: TextInputType.phone,
+                showActionIcons: true,
               ),
-              _buildEditableField(
-                controller: _whatsappController,
-                label: 'WhatsApp Number',
-                icon: FontAwesomeIcons.whatsapp,
-                isEditable: _isEditing,
-                keyboardType: TextInputType.phone,
-              ), */
+
               _buildDepartmentSection(),
-              // _buildSocialMediaSection(),
 
               if (_isEditing)
                 Padding(
@@ -453,28 +252,6 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
     );
   }
 
-  Widget _buildDateOfBirthField(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        readOnly: true,
-        decoration: InputDecoration(
-          labelText: 'Date of Birth',
-          prefixIcon: Icon(Icons.calendar_today, color: Colors.grey),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-        controller: TextEditingController(
-          text: _selectedDateOfBirth != null
-              ? '${_selectedDateOfBirth!.day}/${_selectedDateOfBirth!
-              .month}/${_selectedDateOfBirth!.year}'
-              : '',
-        ),
-        onTap: _isEditing ? () => _selectDateOfBirth(context) : null,
-      ),
-    );
-  }
 
   Widget _buildDepartmentSection() {
     // Dropdown options (you might want to move these to a constants file)

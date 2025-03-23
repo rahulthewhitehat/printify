@@ -7,12 +7,12 @@ class AuthProvider with ChangeNotifier {
   User? _user;
   bool _isLoading = false;
   String? _errorMessage;
-  final bool _verifiedStatus = false;
+  bool _verifiedStatus = false;
 
   AuthProvider(this._authService) {
     _user = _authService.currentUser;
     if (_user != null) {
-
+      _loadVerificationStatus();
     }
   }
 
@@ -20,9 +20,14 @@ class AuthProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _user != null;
+  bool get isVerified => _verifiedStatus;
 
-  bool get isVerified => _verifiedStatus == true;
-
+  Future<void> _loadVerificationStatus() async {
+    if (_user != null) {
+      _verifiedStatus = await _authService.getUserVerificationStatus(_user!.uid);
+      notifyListeners();
+    }
+  }
 
   Future<bool> signIn(String email, String password) async {
     _setLoading(true);
@@ -36,7 +41,7 @@ class AuthProvider with ChangeNotifier {
         return false;
       }
 
-     // await _loadUserRole();
+      await _loadVerificationStatus();
       _setLoading(false);
       return true;
     } catch (e) {
@@ -61,7 +66,7 @@ class AuthProvider with ChangeNotifier {
     _setLoading(true);
     try {
       _user = await _authService.signInWithGoogle();
-    //  await _loadUserRole();
+      await _loadVerificationStatus();
       _setLoading(false);
       return _user != null;
     } catch (e) {

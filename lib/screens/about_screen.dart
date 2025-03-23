@@ -3,10 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreen extends StatelessWidget {
   final String appDescription =
-      'Version 1.0.0 (Beta)\n\nSentinelsHQ is the official management app for the Cyber Sentinels Club, designed to streamline club operations. '
-      'Built with Flutter, it enables efficient task management, issue tracking, event coordination, and team collaboration in one platform. '
-      'This app empowers club members to communicate, contribute, and track their activities seamlessly.';
-
+      'Version 1.0.0 (Beta)\n\n //desc';
   final String developerDescription =
       'I am a student with a deep passion for technology and aspirations to become an ethical hacker. '
       'I have continuously challenged myself in cybersecurity, networking, and programming, reflecting my dedication in multiple achievements and certifications.';
@@ -41,10 +38,10 @@ class AboutScreen extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.blue.shade800,
-                  Colors.blue.shade600,
-                  Colors.blue.shade400,
-                  Colors.blue.shade200,
+                  Color(0xFFE65100), // Darker Orange (accentColor)
+                  Color(0xFFFF9800), // Primary Orange (primaryColor)
+                  Color(0xFFFFB74D), // Lighter Orange (secondaryColor)
+                  Color(0xFFFFCC80), // Softest Orange
                 ],
               ),
             ),
@@ -71,7 +68,7 @@ class AboutScreen extends StatelessWidget {
                                 const Icon(Icons.shield, color: Colors.blue, size: 32),
                                 const SizedBox(width: 12),
                                 Text(
-                                  'About SentinelsHQ',
+                                  'About Printify',
                                   style: TextStyle(
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,

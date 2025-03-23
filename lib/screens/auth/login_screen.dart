@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:printify/screens/settings_screen.dart';
+import 'package:printify/screens/student_dashboard/student_dashboard.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import 'create_screen.dart';
@@ -27,29 +29,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _navigateToDashboard(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-/*
+
     if (authProvider.isVerified) {
-      switch (authProvider.userRole) {
-        case 'Founders':
-        case 'Leads':
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => AdminDashboard()),
-          );
-          break;
-        case 'superAdmin':
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => SuperAdminDashboard()),
-          );
-          break;
-        default:
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (_) => MemberDashboard(role: authProvider.userRole),
-            ),
-          );
-      }
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => StudentDashboard()),
+      );
     }
-    else { */
+
+    else {
       // Show a dialog to inform the user that admin verification is in process
       showDialog(
         context: context,
@@ -69,8 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
         },
       );
     }
-
-
+  }
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {

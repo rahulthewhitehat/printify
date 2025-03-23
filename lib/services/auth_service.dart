@@ -147,7 +147,7 @@ class AuthService {
       }
       return false; // Default
     } catch (e) {
-      //print('Error getting user role: $e');
+      print('Error getting user role: $e');
       return false;
     }
   }

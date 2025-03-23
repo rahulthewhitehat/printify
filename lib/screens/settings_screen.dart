@@ -117,8 +117,6 @@ class SettingsScreen extends StatelessWidget {
         return;
       }
 
-      final String role = userDoc.data()?['role'] ?? '';
-
       // Fetch the detailed user data from the roles collection
       final memberDoc = await FirebaseFirestore.instance
           .collection('students')
@@ -130,7 +128,7 @@ class SettingsScreen extends StatelessWidget {
 
       if (!memberDoc.exists) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User details not found in role members')),
+          const SnackBar(content: Text('User details not found!')),
         );
         return;
       }
@@ -185,10 +183,10 @@ class SettingsScreen extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.blue.shade800,
-                  Colors.blue.shade600,
-                  Colors.blue.shade400,
-                  Colors.blue.shade200,
+                  Color(0xFFE65100), // Darker Orange (accentColor)
+                  Color(0xFFFF9800), // Primary Orange (primaryColor)
+                  Color(0xFFFFB74D), // Lighter Orange (secondaryColor)
+                  Color(0xFFFFCC80), // Softest Orange
                 ],
               ),
             ),
@@ -219,7 +217,7 @@ class SettingsScreen extends StatelessWidget {
                         // If we have data, update with actual values
                         if (snapshot.hasData && snapshot.data != null && snapshot.data!.exists) {
                           final userData = snapshot.data!.data() as Map<String, dynamic>;
-                          userName = userData['name'] ?? "User";
+                          userName = userData['fullName'] ?? "User";
                           userEmail = userData['email'] ?? "";
                         }
 
@@ -310,7 +308,7 @@ class SettingsScreen extends StatelessWidget {
                         _buildSettingsItem(
                           icon: Icons.info_outline,
                           title: "About",
-                          subtitle: "Learn about SentinelsHQ",
+                          subtitle: "Learn about Printify",
                           iconColor: Colors.blue.shade700,
                           onTap: () => Navigator.push(
                             context,
@@ -342,7 +340,7 @@ class SettingsScreen extends StatelessWidget {
                     ),
                     child: _buildSettingsItem(
                       icon: Icons.logout,
-                      title: "Logout",
+                      title: "Log Out",
                       subtitle: "Sign out of your account",
                       iconColor: Colors.red.shade600,
                       textColor: Colors.red.shade600,

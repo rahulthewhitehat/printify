@@ -10,6 +10,7 @@ class UserModel {
   final int? year;
   final String phoneNumber;
   final bool isVerified;
+  final String? rollNumber;
 
   UserModel({
     required this.uid,
@@ -21,6 +22,7 @@ class UserModel {
     this.year,
     required this.phoneNumber,
     this.isVerified = false,
+    required this.rollNumber,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> data) {
@@ -34,6 +36,7 @@ class UserModel {
       year: data['year'],
       phoneNumber: data['phoneNumber'] ?? '',
       isVerified: data['isVerified'] ?? false,
+      rollNumber: data['rollNumber'] ?? '',
     );
   }
 
@@ -48,6 +51,7 @@ class UserModel {
       'year': year,
       'phoneNumber': phoneNumber,
       'isVerified': isVerified,
+      'rollNumber' : rollNumber,
     };
   }
 }
